@@ -29,11 +29,14 @@ RUN cd $RTE_SDK \
    && ninja -C build install \
    && cp -r build/lib /usr/local/
 
+# patch to make pktgen compile on arm. Got tip from
+# https://medium.com/codex/nvidia-mellanox-bluefield-2-smartnic-dpdk-rig-for-dive-part-ii-change-mode-of-operation-a994f0f0e543
+RUN sed -i 's/#  error Platform.*//' /usr/local/include/rte_spinlock.h
+RUN sed -i 's/#  error Platform.*//' /usr/local/include/rte_atomic_32.h
+
 # downlaod and unpack pktgen
 RUN wget -q https://dpdk.org/browse/apps/pktgen-dpdk/snapshot/pktgen-$PKTGEN_VER.tar.gz \
    && tar xf pktgen-$PKTGEN_VER.tar.gz
-
-RUN pwd
 
 # building pktgen
 RUN cd pktgen-$PKTGEN_VER \
